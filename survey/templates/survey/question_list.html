@@ -18,20 +18,28 @@
                     <div class="d-flex flex-column col-4">
                         <u class="fw-lighter mb-1">Respuesta</u>
                         <div>
-                            {% for val in '12345' %}
-                                <a class="mx-1 answer {% if question.user_value|slugify == val %}fas{% else %}fal{% endif %} fa-star text-decoration-none"
-                                   data-question="{{ question.pk }}"
-                                   data-value="{{ val }}" href="#"></a>
-                            {% endfor %}
+                            <form id="form_response_{{question.pk}}" action="{% url 'survey:question-answer' question.pk %}" method="post">
+                                {% csrf_token %}
+                                <input id="response_value_{{question.pk}}" type="text" name="response_value" value="0" hidden>
+                                {% for val in '12345' %}
+                                    <a class="mx-1 answer {% if question.user_value|slugify == val %}fas{% else %}fal{% endif %} fa-star text-decoration-none"
+                                    data-question="{{ question.pk }}"
+                                    data-value="{{ val }}" href='#' onclick='submitResponse({{ question.pk }},{{ val }});'></a>
+                                {% endfor %}
+                            </form>
                         </div>
                     </div>
                     <div class="col-4 d-flex flex-column ">
                         <u class="fw-lighter mb-1">Evalúa la pregunta</u>
                         <div>
-                            <a class="mx-1 like {% if question.user_likes %}fas{% else %}fal{% endif %} fa-thumbs-up text-decoration-none"
-                               href="#" data-question="{{ question.pk }}" data-value="like" ></a>
-                            <a class="mx-1 like {% if question.user_dislikes %}fas{% else %}fal{% endif %} fa-thumbs-up fa-flip-both text-decoration-none"
-                               href="#" data-question="{{ question.pk }}" data-value="dislike"></a>
+                            <form id="form_like_{{question.pk}}" action="{% url 'survey:question-like' question.pk %}" method="post">
+                                {% csrf_token %}
+                                <input id="response_like_value_{{question.pk}}" type="text" name="response_like_value" value="{{ question.like_value }}" hidden>
+                                <a class="mx-1 like {% if question.like_value == 1 %}fas{% else %}fal{% endif %} fa-thumbs-up text-decoration-none"
+                                href="#" data-question="{{ question.pk }}" data-value="like" onclick='submitLike({{ question.pk }},1);'></a>
+                                <a class="mx-1 like  {% if question.like_value == 2 %}fas{% else %}fal{% endif %} fa-thumbs-up fa-flip-both text-decoration-none"
+                                href="#" data-question="{{ question.pk }}" data-value="dislike" onclick='submitLike({{ question.pk }},2);'></a>
+                            </form>
                         </div>
                     </div>
                     <div class="col-2">
@@ -52,8 +60,17 @@
 
 {% block js %}
     <script>
+        function submitResponse(question_pk,val) {
+            document.getElementById("response_value_"+question_pk).value = val;
+            document.getElementById("form_response_"+question_pk).submit();
+        }
 
-
+        function submitLike(question_pk,val) {
+            if (document.getElementById("response_like_value_"+question_pk).value == val){
+                val = 0
+            }
+            document.getElementById("response_like_value_"+question_pk).value = val;
+            document.getElementById("form_like_"+question_pk).submit();
+        }
     </script>
-
 {% endblock %}

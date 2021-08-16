@@ -2,6 +2,16 @@
 
 Author: CW-TEAM
 
+## Intrucciones para correr el ejemplo:
+
+1. correr: 
+    python manage.py makemigrations survey
+    python manage.py migrate
+2. crear un super usuario
+    python manage.py createsuperuser
+3. python manage.py runserver
+
+
 ## Instrucciones:
 
 ### How to
